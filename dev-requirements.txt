@@ -1,0 +1,5 @@
+pytest
+setuptools
+wheel
+matplotlib
+# TODO: update the necessary requirements to develop this package
