@@ -1,4 +1,3 @@
-
 import csv
 import math
 import matplotlib.pyplot as plt
@@ -135,7 +134,6 @@ def create_plots(filename: str, png_filename: str | None=None) -> None:
     x_norm = np.linspace(mean-3*stdev, mean+3*stdev, 500)
     y_norm = 1/np.sqrt(np.pi*2*stdev**2)*np.e**(-1*(x_norm-mean)**2/(2*stdev**2))
 
-    plt.figure(figsize = (6, 6))
     plt.subplot(211)
     plt.bar(categories, values)
     plt.title('Time Histogram and Distribution')
@@ -148,11 +146,9 @@ def create_plots(filename: str, png_filename: str | None=None) -> None:
     plt.ylim(top=ylim+ylim/10) # Adjusting ylim so frequency numbers don't get cut off
     plt.yticks(ticks=plt.yticks()[0], labels=plt.yticks()[0].astype(int)) # Integer yticks
     
-
-    # Displaying number of solves, mean, standard deviation, and fastest solve in the top right corner
-    plt.text(len(categories)-0.1, plt.ylim()[1]-0.01*plt.ylim()[1], 
-             'solves: ' + str(total_solves) + '\nmean: ' + str(round(mean, 2)) 
-             + '\nstdev: ' + str(round(stdev, 2)) + '\nfastest: ' + str(fastest_solve),
+    # Displaying number of solves and fastest solve 
+    plt.text(len(categories)*0.99, plt.ylim()[1]*0.98, 
+             'solves: ' + str(total_solves) + '\nfastest: ' + str(fastest_solve),
              fontsize = 8, ha = 'right', va = 'top')
 
     # Adjusting the fontsize of the names of time categories on the x-axis
@@ -165,10 +161,13 @@ def create_plots(filename: str, png_filename: str | None=None) -> None:
     plt.xlim(mean-3*stdev, mean+3*stdev)
     plt.tick_params('both', labelsize = 8)
 
+    # Displaying mean and standard deviation
+    plt.text(plt.xlim()[1]*0.995, plt.ylim()[1]*0.98, 
+             'mean: ' + str(round(mean, 2)) 
+             + '\nstdev: ' + str(round(stdev, 2)),
+             fontsize = 8, ha = 'right', va = 'top')
 
     # Saving the figure at high quality (in this case 300 dpi)
     if png_filename != None:
         plt.savefig(png_filename, dpi=300)
     plt.show()
-
-create_plots("Session20.csv")
