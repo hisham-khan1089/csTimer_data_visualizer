@@ -1,6 +1,8 @@
+
 import csv
 import math
 import matplotlib.pyplot as plt
+import numpy as np
 
 def convert_to_seconds(time: str) -> float:
     """Convert the string time, which represents a time in hh:mm:ss.xx format, to seconds, turning 
@@ -115,27 +117,37 @@ def data_for_plot(filename: str) -> list:
     
     return [total_solves, mean, stdev, fastest_solve, categories, values]
 
-def create_plot(filename: str, png_filename: str | None=None) -> None: 
+def create_plots(filename: str, png_filename: str | None=None) -> None: 
     
     """Creates a histogram plot representing solve frequency in various time categories.
     Takes a csTimer formatted csv file called fileame, and saves a plot with name png_filename."""
 
-    stats = data_for_plot(filename)
+    file_path = "/Users/hishamkhan/Documents/csTimer_csvs/" # TODO: change this to your desired file path with exported csvs
+
+    stats = data_for_plot(file_path + filename)
     total_solves = stats[0]
     mean = stats[1]
     stdev = stats[2]
     fastest_solve = stats[3]
     categories = stats[4]
     values = stats[5]
+    
+    x_norm = np.linspace(mean-3*stdev, mean+3*stdev, 500)
+    y_norm = 1/np.sqrt(np.pi*2*stdev**2)*np.e**(-1*(x_norm-mean)**2/(2*stdev**2))
 
+    plt.figure(figsize = (6, 6))
+    plt.subplot(211)
     plt.bar(categories, values)
-    plt.xlabel('Time Categories')
-    plt.ylabel('Frequency')
-    plt.title('3x3 Solve Histogram')
+    plt.title('Time Histogram and Distribution')
 
     # Displaying the frequency value above each bar using enumerate (search its documentation)
     for i, value in enumerate(values):
         plt.text(i, value + plt.ylim()[1]/100, str(value), ha = 'center', fontsize = 8)
+    
+    ylim = plt.ylim()[1]
+    plt.ylim(top=ylim+ylim/10) # Adjusting ylim so frequency numbers don't get cut off
+    plt.yticks(ticks=plt.yticks()[0], labels=plt.yticks()[0].astype(int)) # Integer yticks
+    
 
     # Displaying number of solves, mean, standard deviation, and fastest solve in the top right corner
     plt.text(len(categories)-0.1, plt.ylim()[1]-0.01*plt.ylim()[1], 
@@ -144,12 +156,19 @@ def create_plot(filename: str, png_filename: str | None=None) -> None:
              fontsize = 8, ha = 'right', va = 'top')
 
     # Adjusting the fontsize of the names of time categories on the x-axis
-    plt.tick_params('x', labelsize = 8)
+    plt.tick_params('both', labelsize = 8)
+
+    # Normal distribution
+    plt.subplot(212)
+    plt.plot(x_norm, y_norm)
+
+    plt.xlim(mean-3*stdev, mean+3*stdev)
+    plt.tick_params('both', labelsize = 8)
+
 
     # Saving the figure at high quality (in this case 300 dpi)
     if png_filename != None:
         plt.savefig(png_filename, dpi=300)
     plt.show()
 
-
-    
+create_plots("Session20.csv")
